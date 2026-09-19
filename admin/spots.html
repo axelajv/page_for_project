@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Kelpy Admin — Spots à vérifier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+</head>
+<body>
+
+<div class="page">
+  <div class="dash-header">
+    <a class="back-link" href="dashboard.html">← Retour au dashboard</a>
+    <button class="dash-logout" onclick="logout()">Déconnexion</button>
+  </div>
+
+  <div class="panel">
+    <p class="panel-title">Spots à vérifier</p>
+    <div id="list"><p class="load-note">Chargement…</p></div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+  const FLAG_REASON_LABELS = {
+    landlocked: 'Coordonnées en terre',
+    no_data: 'Aucune donnée de houle',
+  };
+
+  async function loadFlaggedSpots() {
+    const { data, error } = await supabaseClient
+      .from('spots')
+      .select('id, name, latitude, longitude, flagged_reason')
+      .not('flagged_reason', 'is', null)
+      .order('flagged_at', { ascending: false });
+    if (error) throw error;
+    renderList(data ?? []);
+  }
+
+  function renderList(spots) {
+    const list = document.getElementById('list');
+    if (spots.length === 0) {
+      list.innerHTML = '<p class="empty-note">Rien à vérifier pour l’instant 👌</p>';
+      return;
+    }
+    list.innerHTML = spots
+      .map(
+        (spot) => `
+      <div class="flag-row" id="row-${spot.id}">
+        <span class="flag-reason">${FLAG_REASON_LABELS[spot.flagged_reason] || spot.flagged_reason}</span>
+        <span class="flag-name">${spot.name}</span>
+        <span class="flag-coords">${spot.latitude.toFixed(5)}, ${spot.longitude.toFixed(5)}</span>
+        <a class="flag-map" target="_blank" rel="noopener" href="https://www.google.com/maps?q=${spot.latitude},${spot.longitude}">Voir sur la carte</a>
+        <span class="flag-x" onclick="dismiss('${spot.id}')">✕</span>
+      </div>`
+      )
+      .join('');
+  }
+
+  async function dismiss(spotId) {
+    const row = document.getElementById(`row-${spotId}`);
+    row.style.opacity = '0.4';
+    try {
+      const { error } = await supabaseClient.functions.invoke('moderation', {
+        body: { action: 'dismiss_spot_flag', spotId },
+      });
+      if (error) throw error;
+      row.remove();
+      const list = document.getElementById('list');
+      if (!list.querySelector('.flag-row')) {
+        list.innerHTML = '<p class="empty-note">Rien à vérifier pour l’instant 👌</p>';
+      }
+    } catch (e) {
+      row.style.opacity = '1';
+      alert('Action impossible, réessaie.');
+    }
+  }
+
+  (async function init() {
+    const session = await requireAdminSession();
+    if (!session) return;
+    await loadFlaggedSpots();
+  })();
+</script>
+
+</body>
+</html>
