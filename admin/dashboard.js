@@ -32,16 +32,29 @@ function periodRange() {
   return { from: addDays(startOfDay(now), -7), to: now, sparkDays: 7, sparkEnd: now };
 }
 
-function renderBars(containerId, buckets, color) {
+function formatShortDate(date) {
+  return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function renderBars(containerId, buckets, dates, color) {
   const container = document.getElementById(containerId);
   const max = Math.max(1, ...buckets);
   container.innerHTML = buckets
-    .map((v) => `<div class="mini-bar" style="height:${Math.max(4, (v / max) * 100)}%; ${v > 0 ? `background:${color};` : ''}"></div>`)
+    .map((v, i) => {
+      const height = Math.max(4, (v / max) * 100);
+      const barColor = v > 0 ? `background:${color};` : '';
+      return `<div class="mini-bar-col">
+        <div class="mini-bar-track"><div class="mini-bar" style="height:${height}%; ${barColor}" title="${v}"></div></div>
+        <span class="mini-bar-label">${formatShortDate(dates[i])}</span>
+      </div>`;
+    })
     .join('');
 }
 
 async function loadActivity() {
   const { from, to, sparkDays, sparkEnd } = periodRange();
+  const sparkStart = addDays(startOfDay(sparkEnd), -sparkDays);
+  const dates = Array.from({ length: sparkDays }, (_, i) => addDays(sparkStart, i));
 
   const [signups, checks, sessions, signupBars, checkBars, sessionBars] = await Promise.all([
     countInRange('profiles', from, to, true),
@@ -55,9 +68,9 @@ async function loadActivity() {
   document.getElementById('signups-n').textContent = signups;
   document.getElementById('checks-n').textContent = checks;
   document.getElementById('sessions-n').textContent = sessions;
-  renderBars('signups-bars', signupBars, '#2F7FD1');
-  renderBars('checks-bars', checkBars, '#2FA88A');
-  renderBars('sessions-bars', sessionBars, '#E8A94C');
+  renderBars('signups-bars', signupBars, dates, '#2F7FD1');
+  renderBars('checks-bars', checkBars, dates, '#2FA88A');
+  renderBars('sessions-bars', sessionBars, dates, '#E8A94C');
 }
 
 function setActivityMode(mode) {
