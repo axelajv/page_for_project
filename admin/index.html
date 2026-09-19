@@ -57,7 +57,7 @@
 
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
     if (error) {
-      errorEl.textContent = 'Email ou mot de passe incorrect.';
+      errorEl.textContent = `Erreur : ${error.message} (${error.status ?? '?'})`;
       btn.disabled = false;
       btn.textContent = 'Se connecter';
       return;
