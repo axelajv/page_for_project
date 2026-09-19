@@ -56,21 +56,25 @@ async function loadActivity() {
   const sparkStart = addDays(startOfDay(sparkEnd), -sparkDays);
   const dates = Array.from({ length: sparkDays }, (_, i) => addDays(sparkStart, i));
 
-  const [signups, checks, sessions, signupBars, checkBars, sessionBars] = await Promise.all([
+  const [signups, checks, sessions, spots, signupBars, checkBars, sessionBars, spotBars] = await Promise.all([
     countInRange('profiles', from, to, true),
     countInRange('checks', from, to, false),
     countInRange('sessions_posted', from, to, false),
+    countInRange('spots', from, to, false),
     dailyCounts('profiles', sparkEnd, sparkDays, true),
     dailyCounts('checks', sparkEnd, sparkDays, false),
     dailyCounts('sessions_posted', sparkEnd, sparkDays, false),
+    dailyCounts('spots', sparkEnd, sparkDays, false),
   ]);
 
   document.getElementById('signups-n').textContent = signups;
   document.getElementById('checks-n').textContent = checks;
   document.getElementById('sessions-n').textContent = sessions;
+  document.getElementById('spots-n').textContent = spots;
   renderBars('signups-bars', signupBars, dates, '#2F7FD1');
   renderBars('checks-bars', checkBars, dates, '#2FA88A');
   renderBars('sessions-bars', sessionBars, dates, '#E8A94C');
+  renderBars('spots-bars', spotBars, dates, '#875C3C');
 }
 
 function setActivityMode(mode) {
@@ -159,13 +163,15 @@ function renderDonut(counts) {
 }
 
 async function loadOverview() {
-  const [{ count: totalAccounts }, levelRows, { count: flaggedCount }] = await Promise.all([
+  const [{ count: totalAccounts }, levelRows, { count: flaggedCount }, { count: totalSpots }] = await Promise.all([
     supabaseClient.from('profiles').select('id', { count: 'exact', head: true }).eq('is_test_account', false),
     supabaseClient.from('profiles').select('level').eq('is_test_account', false),
     supabaseClient.from('spots').select('id', { count: 'exact', head: true }).not('flagged_reason', 'is', null),
+    supabaseClient.from('spots').select('id', { count: 'exact', head: true }),
   ]);
 
   document.getElementById('total-accounts').textContent = totalAccounts ?? 0;
+  document.getElementById('total-spots').textContent = totalSpots ?? 0;
 
   const counts = {};
   for (const row of levelRows.data ?? []) {

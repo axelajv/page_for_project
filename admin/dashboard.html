@@ -20,9 +20,15 @@
     <button class="dash-logout" onclick="logout()">Déconnexion</button>
   </div>
 
-  <div class="kpi">
-    <p class="n" id="total-accounts">…</p>
-    <p class="l">Comptes au total (depuis le lancement)</p>
+  <div class="alert-row" style="margin-bottom:20px;">
+    <div class="kpi" style="margin-bottom:0;">
+      <p class="n" id="total-accounts">…</p>
+      <p class="l">Comptes au total</p>
+    </div>
+    <div class="kpi" style="margin-bottom:0;">
+      <p class="n" id="total-spots">…</p>
+      <p class="l">Spots ajoutés au total</p>
+    </div>
   </div>
 
   <div class="panel activity-panel">
@@ -61,6 +67,10 @@
         <p class="l"><span class="n" id="sessions-n">…</span>&nbsp; Sessions postées</p>
         <div class="mini-bars" id="sessions-bars"></div>
       </div>
+      <div class="activity-stat">
+        <p class="l"><span class="n" id="spots-n">…</span>&nbsp; Spots ajoutés</p>
+        <div class="mini-bars" id="spots-bars"></div>
+      </div>
     </div>
   </div>
 
@@ -86,7 +96,7 @@
 </div>
 
 <script src="shared.js?v=2"></script>
-<script src="dashboard.js?v=2"></script>
+<script src="dashboard.js?v=3"></script>
 
 </body>
 </html>
