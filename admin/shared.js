@@ -29,21 +29,25 @@ function addDays(date, n) {
   return d;
 }
 
-/** `filterTestAccounts`: pour `profiles`, exclut les comptes de démo/review (mêmes que la recherche d'amis dans l'app). */
-async function countInRange(table, from, to, filterTestAccounts) {
+/**
+ * `filterTestAccounts`: pour `profiles`, exclut les comptes de démo/review (mêmes que la
+ * recherche d'amis dans l'app). `eventName`: pour `analytics_events`, filtre sur ce nom d'event.
+ */
+async function countInRange(table, from, to, filterTestAccounts, eventName) {
   let query = supabaseClient
     .from(table)
     .select('id', { count: 'exact', head: true })
     .gte('created_at', from.toISOString())
     .lt('created_at', to.toISOString());
   if (filterTestAccounts) query = query.eq('is_test_account', false);
+  if (eventName) query = query.eq('event_name', eventName);
   const { count, error } = await query;
   if (error) throw error;
   return count ?? 0;
 }
 
 /** Comptes par jour sur `days` jours se terminant à `endExclusive` (exclu) — pour les mini-graphiques. */
-async function dailyCounts(table, endExclusive, days, filterTestAccounts) {
+async function dailyCounts(table, endExclusive, days, filterTestAccounts, eventName) {
   const start = addDays(startOfDay(endExclusive), -days);
   let query = supabaseClient
     .from(table)
@@ -51,6 +55,7 @@ async function dailyCounts(table, endExclusive, days, filterTestAccounts) {
     .gte('created_at', start.toISOString())
     .lt('created_at', endExclusive.toISOString());
   if (filterTestAccounts) query = query.eq('is_test_account', false);
+  if (eventName) query = query.eq('event_name', eventName);
   const { data, error } = await query;
   if (error) throw error;
 

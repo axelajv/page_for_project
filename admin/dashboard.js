@@ -56,25 +56,30 @@ async function loadActivity() {
   const sparkStart = addDays(startOfDay(sparkEnd), -sparkDays);
   const dates = Array.from({ length: sparkDays }, (_, i) => addDays(sparkStart, i));
 
-  const [signups, checks, sessions, spots, signupBars, checkBars, sessionBars, spotBars] = await Promise.all([
-    countInRange('profiles', from, to, true),
-    countInRange('checks', from, to, false),
-    countInRange('sessions_posted', from, to, false),
-    countInRange('spots', from, to, false),
-    dailyCounts('profiles', sparkEnd, sparkDays, true),
-    dailyCounts('checks', sparkEnd, sparkDays, false),
-    dailyCounts('sessions_posted', sparkEnd, sparkDays, false),
-    dailyCounts('spots', sparkEnd, sparkDays, false),
-  ]);
+  const [signups, checks, sessions, spots, recos, signupBars, checkBars, sessionBars, spotBars, recoBars] =
+    await Promise.all([
+      countInRange('profiles', from, to, true),
+      countInRange('checks', from, to, false),
+      countInRange('sessions_posted', from, to, false),
+      countInRange('spots', from, to, false),
+      countInRange('analytics_events', from, to, false, 'recommendation_launch'),
+      dailyCounts('profiles', sparkEnd, sparkDays, true),
+      dailyCounts('checks', sparkEnd, sparkDays, false),
+      dailyCounts('sessions_posted', sparkEnd, sparkDays, false),
+      dailyCounts('spots', sparkEnd, sparkDays, false),
+      dailyCounts('analytics_events', sparkEnd, sparkDays, false, 'recommendation_launch'),
+    ]);
 
   document.getElementById('signups-n').textContent = signups;
   document.getElementById('checks-n').textContent = checks;
   document.getElementById('sessions-n').textContent = sessions;
   document.getElementById('spots-n').textContent = spots;
+  document.getElementById('reco-n').textContent = recos;
   renderBars('signups-bars', signupBars, dates, '#2F7FD1');
   renderBars('checks-bars', checkBars, dates, '#2FA88A');
   renderBars('sessions-bars', sessionBars, dates, '#E8A94C');
   renderBars('spots-bars', spotBars, dates, '#875C3C');
+  renderBars('reco-bars', recoBars, dates, '#1B4E80');
 }
 
 function setActivityMode(mode) {
