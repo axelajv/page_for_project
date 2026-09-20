@@ -16,7 +16,7 @@ const MONTH_NAMES = [
   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
 ];
 
-let activityMode = '7d'; // 'today' | '7d' | '30d' | 'date'
+let activityMode = 'today'; // 'today' | '7d' | '30d' | 'date'
 let selectedDate = null;
 let calendarViewDate = new Date();
 
