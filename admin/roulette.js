@@ -1,12 +1,14 @@
 const STORAGE_KEY = 'kelpy-admin-roulette-names';
-const CARD_WIDTH = 160;
-const CARD_MARGIN = 6;
-const CARD_STEP = CARD_WIDTH + CARD_MARGIN * 2;
-const SPIN_DURATION_MS = 4500;
+const SLICE_COLORS = ['#2F7FD1', '#2FA88A', '#E8A94C', '#1B4E80', '#1C6E58', '#9C6A1E'];
+const LABEL_RADIUS = 110;
+const SPIN_DURATION_MS = 5000;
+const MIN_FULL_SPINS = 6;
+const MAX_FULL_SPINS = 9;
 
 let participants = [];
 let history = [];
 let isSpinning = false;
+let currentRotation = 0;
 
 const namesInput = document.getElementById('names-input');
 const loadBtn = document.getElementById('load-btn');
@@ -15,7 +17,7 @@ const spinBtn = document.getElementById('spin-btn');
 const respinBtn = document.getElementById('respin-btn');
 const removeWinnerBtn = document.getElementById('remove-winner-btn');
 const participantCount = document.getElementById('participant-count');
-const reelStrip = document.getElementById('reel-strip');
+const wheel = document.getElementById('wheel');
 const winnerCard = document.getElementById('winner-card');
 const winnerName = document.getElementById('winner-name');
 const historyPanel = document.getElementById('history-panel');
@@ -28,25 +30,44 @@ function parseNames(text) {
     .filter((n) => n.length > 0);
 }
 
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
 function renderParticipantCount() {
   participantCount.textContent = `${participants.length} participant${participants.length > 1 ? 's' : ''}`;
   spinBtn.disabled = participants.length < 2 || isSpinning;
 }
 
-function renderIdleReel() {
-  reelStrip.classList.remove('spin-mode');
-  reelStrip.style.transition = 'none';
-  reelStrip.style.transform = 'none';
-  reelStrip.innerHTML = participants
-    .slice(0, 12)
-    .map((name) => `<div class="reel-card"><span>${escapeHtml(name)}</span></div>`)
-    .join('');
-}
+/** Dessine les parts (conic-gradient) + les étiquettes de noms autour de la roue. */
+function renderWheel() {
+  wheel.style.transition = 'none';
+  wheel.style.transform = `rotate(${currentRotation}deg)`;
 
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+  const n = participants.length;
+  if (n === 0) {
+    wheel.style.background = 'var(--foam-2)';
+    wheel.innerHTML = '';
+    return;
+  }
+
+  const sliceAngle = 360 / n;
+  const stops = participants
+    .map((_, i) => {
+      const color = SLICE_COLORS[i % SLICE_COLORS.length];
+      return `${color} ${i * sliceAngle}deg ${(i + 1) * sliceAngle}deg`;
+    })
+    .join(', ');
+  wheel.style.background = `conic-gradient(${stops})`;
+
+  wheel.innerHTML = participants
+    .map((name, i) => {
+      const angle = i * sliceAngle + sliceAngle / 2;
+      return `<div class="wheel-label" style="transform:rotate(${angle}deg) translateY(-${LABEL_RADIUS}px) rotate(${-angle}deg);"><span>${escapeHtml(name)}</span></div>`;
+    })
+    .join('');
 }
 
 function loadFromStorage() {
@@ -70,8 +91,9 @@ function handleLoad() {
   participants = parseNames(namesInput.value);
   saveToStorage();
   winnerCard.classList.remove('show');
+  currentRotation = 0;
   renderParticipantCount();
-  renderIdleReel();
+  renderWheel();
 }
 
 function handleClear() {
@@ -82,8 +104,9 @@ function handleClear() {
   winnerCard.classList.remove('show');
   historyPanel.style.display = 'none';
   historyList.innerHTML = '';
+  currentRotation = 0;
   renderParticipantCount();
-  renderIdleReel();
+  renderWheel();
 }
 
 function spin() {
@@ -92,32 +115,22 @@ function spin() {
   spinBtn.disabled = true;
   winnerCard.classList.remove('show');
 
-  const winnerIndex = Math.floor(Math.random() * participants.length);
+  const n = participants.length;
+  const sliceAngle = 360 / n;
+  const winnerIndex = Math.floor(Math.random() * n);
   const winner = participants[winnerIndex];
 
-  // Bande longue de noms aléatoires, le dernier élément est le gagnant.
-  const stripLength = 46;
-  const strip = [];
-  for (let i = 0; i < stripLength - 1; i++) {
-    strip.push(participants[Math.floor(Math.random() * participants.length)]);
-  }
-  strip.push(winner);
+  // La pointe fixe est en haut (0deg). Pour amener le centre de la part du gagnant sous la
+  // pointe, il faut annuler son angle, plus plusieurs tours complets pour l'effet, plus un petit
+  // décalage aléatoire à l'intérieur de la part pour ne jamais retomber pile au même endroit.
+  const centerAngle = winnerIndex * sliceAngle + sliceAngle / 2;
+  const jitter = (Math.random() - 0.5) * sliceAngle * 0.7;
+  const fullSpins = MIN_FULL_SPINS + Math.floor(Math.random() * (MAX_FULL_SPINS - MIN_FULL_SPINS + 1));
+  const targetRotation = currentRotation + fullSpins * 360 + (360 - centerAngle + jitter - (currentRotation % 360));
 
-  reelStrip.classList.add('spin-mode');
-  reelStrip.style.transition = 'none';
-  reelStrip.style.transform = 'translateX(0px)';
-  reelStrip.innerHTML = strip.map((name) => `<div class="reel-card"><span>${escapeHtml(name)}</span></div>`).join('');
-
-  // Force un reflow pour que le "transition:none" soit bien appliqué avant l'animation.
-  // eslint-disable-next-line no-unused-expressions
-  reelStrip.offsetHeight;
-
-  const targetOffset = -(strip.length - 1) * CARD_STEP - CARD_STEP / 2;
-
-  requestAnimationFrame(() => {
-    reelStrip.style.transition = `transform ${SPIN_DURATION_MS}ms cubic-bezier(0.12, 0.65, 0.1, 1)`;
-    reelStrip.style.transform = `translateX(${targetOffset}px)`;
-  });
+  wheel.style.transition = `transform ${SPIN_DURATION_MS}ms cubic-bezier(0.1, 0.6, 0.15, 1)`;
+  wheel.style.transform = `rotate(${targetRotation}deg)`;
+  currentRotation = targetRotation;
 
   setTimeout(() => {
     isSpinning = false;
@@ -149,8 +162,9 @@ function removeWinnerFromList() {
   namesInput.value = participants.join('\n');
   saveToStorage();
   winnerCard.classList.remove('show');
+  currentRotation = 0;
   renderParticipantCount();
-  renderIdleReel();
+  renderWheel();
 }
 
 loadBtn.addEventListener('click', handleLoad);
