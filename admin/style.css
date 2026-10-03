@@ -105,16 +105,16 @@ body{ margin:0; background:var(--foam); font-family:'Inter',sans-serif; color:va
 .btn-danger{ border-color:var(--danger); color:var(--danger-dark); }
 .participant-count{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--slate); margin:8px 0 0; }
 
-.wheel-wrap{ position:relative; width:300px; max-width:100%; aspect-ratio:1; margin:24px auto; }
-.wheel{ width:100%; height:100%; border-radius:50%; border:4px solid var(--line); position:relative; box-shadow:5px 5px 0 rgba(15,36,56,0.15); }
+.wheel-wrap{ position:relative; width:480px; max-width:100%; aspect-ratio:1; margin:28px auto; }
+.wheel{ width:100%; height:100%; border-radius:50%; border:5px solid var(--line); position:relative; box-shadow:6px 6px 0 rgba(15,36,56,0.15); }
 .wheel-label{ position:absolute; top:50%; left:50%; width:0; height:0; }
 .wheel-label span{
-  position:absolute; left:-55px; top:-8px; width:110px; text-align:center;
-  font-family:'Fredoka',sans-serif; font-weight:700; font-size:10.5px; color:var(--ink);
+  position:absolute; left:-85px; top:-11px; width:170px; text-align:center;
+  font-family:'Fredoka',sans-serif; font-weight:700; font-size:14.5px; color:var(--ink);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.wheel-pointer{ position:absolute; top:-16px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:14px solid transparent; border-right:14px solid transparent; border-top:24px solid var(--ink); z-index:3; }
-.wheel-hub{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:38px; height:38px; border-radius:50%; background:#fff; border:3px solid var(--line); z-index:2; display:flex; align-items:center; justify-content:center; font-size:16px; }
+.wheel-pointer{ position:absolute; top:-20px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:18px solid transparent; border-right:18px solid transparent; border-top:30px solid var(--ink); z-index:3; }
+.wheel-hub{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:52px; height:52px; border-radius:50%; background:#fff; border:4px solid var(--line); z-index:2; display:flex; align-items:center; justify-content:center; font-size:22px; }
 
 .winner-card{ display:none; text-align:center; border:2.5px solid var(--amber); background:#FBF0DE; border-radius:16px; padding:18px; margin-top:16px; box-shadow:4px 4px 0 rgba(156,106,30,0.2); }
 .winner-card.show{ display:block; }

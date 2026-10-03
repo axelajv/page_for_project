@@ -1,6 +1,6 @@
 const STORAGE_KEY = 'kelpy-admin-roulette-names';
 const SLICE_COLORS = ['#2F7FD1', '#2FA88A', '#E8A94C', '#1B4E80', '#1C6E58', '#9C6A1E'];
-const LABEL_RADIUS = 110;
+const LABEL_RADIUS = 185;
 const SPIN_DURATION_MS = 5000;
 const MIN_FULL_SPINS = 6;
 const MAX_FULL_SPINS = 9;
