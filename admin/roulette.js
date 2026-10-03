@@ -34,8 +34,9 @@ function renderParticipantCount() {
 }
 
 function renderIdleReel() {
+  reelStrip.classList.remove('spin-mode');
   reelStrip.style.transition = 'none';
-  reelStrip.style.transform = 'translateX(0px)';
+  reelStrip.style.transform = 'none';
   reelStrip.innerHTML = participants
     .slice(0, 12)
     .map((name) => `<div class="reel-card"><span>${escapeHtml(name)}</span></div>`)
@@ -102,6 +103,7 @@ function spin() {
   }
   strip.push(winner);
 
+  reelStrip.classList.add('spin-mode');
   reelStrip.style.transition = 'none';
   reelStrip.style.transform = 'translateX(0px)';
   reelStrip.innerHTML = strip.map((name) => `<div class="reel-card"><span>${escapeHtml(name)}</span></div>`).join('');

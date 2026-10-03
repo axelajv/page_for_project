@@ -107,7 +107,8 @@ body{ margin:0; background:var(--foam); font-family:'Inter',sans-serif; color:va
 
 .reel-wrap{ position:relative; margin:20px 0; }
 .reel-viewport{ overflow:hidden; border:2.5px solid var(--line); border-radius:16px; background:#fff; height:110px; position:relative; box-shadow:3px 3px 0 rgba(15,36,56,0.1); }
-.reel-strip{ display:flex; height:100%; align-items:center; position:absolute; left:50%; top:0; will-change:transform; }
+.reel-strip{ display:flex; height:100%; align-items:center; padding-left:12px; }
+.reel-strip.spin-mode{ position:absolute; left:50%; top:0; padding-left:0; will-change:transform; }
 .reel-card{ width:160px; height:78px; margin:0 6px; border:2.5px solid var(--line); border-radius:14px; background:var(--foam-2); display:flex; align-items:center; justify-content:center; text-align:center; padding:8px; flex-shrink:0; }
 .reel-card span{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:13px; color:var(--ink); word-break:break-word; }
 .reel-marker{ position:absolute; left:50%; top:-8px; bottom:-8px; width:0; border-left:3px dashed var(--ocean); transform:translateX(-50%); pointer-events:none; z-index:2; }
