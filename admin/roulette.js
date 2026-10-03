@@ -109,7 +109,7 @@ function handleClear() {
   renderWheel();
 }
 
-function spin(forcedWinnerName) {
+function spin() {
   if (isSpinning || participants.length < 2) return;
   isSpinning = true;
   spinBtn.disabled = true;
@@ -117,8 +117,7 @@ function spin(forcedWinnerName) {
 
   const n = participants.length;
   const sliceAngle = 360 / n;
-  const forcedIndex = forcedWinnerName ? participants.indexOf(forcedWinnerName) : -1;
-  const winnerIndex = forcedIndex >= 0 ? forcedIndex : Math.floor(Math.random() * n);
+  const winnerIndex = Math.floor(Math.random() * n);
   const winner = participants[winnerIndex];
 
   // La pointe fixe est en haut (0deg). Pour amener le centre de la part du gagnant sous la
@@ -180,10 +179,3 @@ removeWinnerBtn.addEventListener('click', removeWinnerFromList);
   loadFromStorage();
   handleLoad();
 })();
-
-// Hook de test, console uniquement (pas de bouton dans l'UI) : __kelpyTestSpin('a2h')
-// force la roue à tomber sur ce pseudo pour vérifier l'animation. N'affecte jamais
-// un tirage lancé normalement via le bouton "Lancer le tirage".
-window.__kelpyTestSpin = function (handle) {
-  spin(handle);
-};
