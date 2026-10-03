@@ -95,3 +95,33 @@ body{ margin:0; background:var(--foam); font-family:'Inter',sans-serif; color:va
 .flag-x{ width:26px; height:26px; border-radius:13px; background:var(--foam-2); border:2px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:'Fredoka',sans-serif; font-weight:700; color:var(--danger-dark); font-size:12px; cursor:pointer; margin-left:auto; }
 .empty-note{ font-family:'Inter',sans-serif; font-size:13px; color:var(--slate-light); font-style:italic; }
 .load-note{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--slate-light); }
+
+/* Roulette */
+.roulette-textarea{ width:100%; min-height:140px; border:2px solid var(--line); border-radius:14px; padding:12px; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink); resize:vertical; margin-bottom:10px; }
+.roulette-controls{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
+.btn{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:12.5px; border:2px solid var(--line); border-radius:11px; padding:10px 16px; cursor:pointer; background:#fff; color:var(--ink); }
+.btn:disabled{ opacity:0.45; cursor:default; }
+.btn-primary{ background:var(--ocean); color:#fff; box-shadow:3px 3px 0 rgba(15,36,56,0.9); }
+.btn-danger{ border-color:var(--danger); color:var(--danger-dark); }
+.participant-count{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--slate); margin:8px 0 0; }
+
+.reel-wrap{ position:relative; margin:20px 0; }
+.reel-viewport{ overflow:hidden; border:2.5px solid var(--line); border-radius:16px; background:#fff; height:110px; position:relative; box-shadow:3px 3px 0 rgba(15,36,56,0.1); }
+.reel-strip{ display:flex; height:100%; align-items:center; position:absolute; left:50%; top:0; will-change:transform; }
+.reel-card{ width:160px; height:78px; margin:0 6px; border:2.5px solid var(--line); border-radius:14px; background:var(--foam-2); display:flex; align-items:center; justify-content:center; text-align:center; padding:8px; flex-shrink:0; }
+.reel-card span{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:13px; color:var(--ink); word-break:break-word; }
+.reel-marker{ position:absolute; left:50%; top:-8px; bottom:-8px; width:0; border-left:3px dashed var(--ocean); transform:translateX(-50%); pointer-events:none; z-index:2; }
+.reel-marker::before, .reel-marker::after{ content:''; position:absolute; left:50%; width:0; height:0; border-left:7px solid transparent; border-right:7px solid transparent; transform:translateX(-50%); }
+.reel-marker::before{ top:-9px; border-top:9px solid var(--ocean); }
+.reel-marker::after{ bottom:-9px; border-bottom:9px solid var(--ocean); }
+
+.winner-card{ display:none; text-align:center; border:2.5px solid var(--amber); background:#FBF0DE; border-radius:16px; padding:18px; margin-top:16px; box-shadow:4px 4px 0 rgba(156,106,30,0.2); }
+.winner-card.show{ display:block; }
+.winner-eyebrow{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--amber-dark); text-transform:uppercase; letter-spacing:0.1em; margin:0 0 6px; }
+.winner-name{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:24px; color:var(--ink); margin:0 0 14px; }
+.winner-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+
+.history-row{ display:flex; align-items:center; justify-content:space-between; border-bottom:1.5px dashed var(--foam-2); padding:9px 0; font-size:12.5px; }
+.history-row:last-child{ border-bottom:none; }
+.history-name{ font-family:'Fredoka',sans-serif; font-weight:600; color:var(--ink); }
+.history-time{ font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--slate-light); }
